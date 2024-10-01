@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesan Suku Cadang - Bike Retail Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        khaki: '#ebded3',
+                        bistre: '#B9AB96',
+                        'rose-ebony': '#69403D',
+                        'black-bean': '#31130E',
+                        gray: '#ddd0c5',
+                    },
+                    fontFamily: {
+                        'playfair': ['"Playfair Display"', 'serif'],
+                        'cormorant': ['"Cormorant Garamond"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-[#ebded3] font-cormorant">
+    <div id="main" class="ml-72 p-8">
+        <div id="mySidebar" class="h-full w-72 fixed z-10 top-0 left-0 bg-black-bean overflow-x-hidden transition-all duration-500 pt-15">
+            <a href="javascript:void(0)" class="closebtn absolute top-0 right-6 text-4xl" onclick="closeNav()">×</a>
+            <!-- Konten sidebar lainnya -->
+            <div class="mt-20 flex flex-col items-center space-y-4">
+                <a href="{{ url_for('beranda') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Beranda</a>
+                <a href="{{ url_for('transaksi') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Transaksi</a>
+                <a href="{{ url_for('histori') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Histori</a>
+                <a href="{{ url_for('gudang') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Gudang</a>
+                <a href="{{ url_for('pesan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Pesan</a>
+                <a href="{{ url_for('lacak_pesanan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Lacak Pesanan</a>
+            </div>
+    
+            <!-- Tombol Logout di bagian bawah sidebar -->
+            <div class="absolute bottom-0 w-full pb-6">
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button type="submit" class="w-full bg-rose-ebony text-khaki text-xl py-3 hover:bg-gray">Log Out</button>
+                </form>
+            </div>
+            
+        </div>
+        <main class="container mx-auto">
+            <h1 class="text-3xl font-playfair font-bold mb-6 text-rose-ebony">Daftar Pesan Suku Cadang</h1>
+            <form id="pesanForm" class="space-y-6 bg-white p-8 rounded-lg shadow-lg">
+                <table class="table-auto w-full border-collapse text-left">
+                    <tr class="bg-bistre text-white">
+                        <th class="border border-black-bean py-3 px-4">Label</th>
+                        <th class="border border-black-bean py-3 px-4">Input</th>
+                    </tr>
+                    <tr>
+                        <td class="border border-black-bean py-3 px-4">Pilih Supplier:</td>
+                        <td class="border border-black-bean py-3 px-4">
+                            <select id="supplier1" name="supplier1" onchange="onSupplierChange()" class="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-ebony">
+                                <option value="Supplier A">Supplier A</option>
+                                <option value="Supplier B">Supplier B</option>
+                                <option value="Supplier C">Supplier C</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border border-black-bean py-3 px-4">Pilih Barang :</td>
+                        <td class="border border-black-bean py-3 px-4">
+                            <select id="barangSelect" name="barang" class="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-ebony" onchange="updateHarga()">
+                                {% for item in items %}
+                                    <option value="{{ item.id_barang }}">{{ item.nama_barang }} (Stok: {{ item.stok }}, Berat: {{ item.berat }}kg)</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border border-black-bean py-3 px-4">Jumlah:</td>
+                        <td class="border border-black-bean py-3 px-4">
+                            <input type="number" id="jumlah" name="jumlah" min="1" class="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-ebony" placeholder="Masukkan jumlah barang">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border border-black-bean py-3 px-4">Harga (Rp):</td>
+                        <td class="border border-black-bean py-3 px-4">
+                            <input type="text" id="harga" name="harga" readonly class="w-full p-2 rounded-md border border-gray-400 bg-gray-100">
+                        </td>
+                    </tr>
+                </table>
+                <div class="text-center mt-6">
+                    <button type="button" onclick="hitungHarga()" class="bg-rose-ebony text-khaki py-2 px-6 rounded-md hover:bg-bistre focus:outline-none focus:ring-2 focus:ring-bistre">Hitung Harga</button>
+                    <button type="button" onclick="addToDatabase()" class="bg-rose-ebony text-khaki py-2 px-6 rounded-md hover:bg-bistre focus:outline-none focus:ring-2 focus:ring-bistre">Beli</button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqDwmOo58PlncIA9wU42Lkalbk-DFqfsg",
+            authDomain: "iakretail7.firebaseapp.com",
+            databaseURL: "https://iakretail7-default-rtdb.firebaseio.com",
+            projectId: "iakretail7",
+            storageBucket: "iakretail7.appspot.com",
+            messagingSenderId: "829556769722",
+            appId: "1:829556769722:web:fe75364fc513f993f35383",
+            measurementId: "G-7RFV5LYH1K"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app); // Pastikan db diinisialisasi setelah app
+
+        // Function to update harga based on selected item
+        function updateHarga() {
+            const selectedItemId = document.getElementById('barangSelect').value;
+
+            // Fetch item details from Firestore
+            db.collection("pesan").doc(selectedItemId).get().then((doc) => {
+                if (doc.exists) {
+                    const itemData = doc.data();
+                    const harga = itemData.harga;
+
+                    // Display harga in the input field
+                    document.getElementById('harga').value = "Rp " + harga.toLocaleString();
+                } else {
+                    console.log("No such document!");
+                    alert('Barang tidak ditemukan.');
+                }
+            }).catch((error) => {
+                console.log("Error getting document:", error);
+            });
+        }
+
+        // Function to calculate total price based on quantity
+        function hitungHarga() {
+            const jumlah = document.getElementById('jumlah').value;
+
+            // Validasi input jumlah
+            if (!jumlah || jumlah <= 0) {
+                alert('Masukkan jumlah yang valid.');
+                return;
+            }
+
+            // Ambil harga yang sudah ditampilkan
+            const harga = parseFloat(document.getElementById('harga').value.replace(/[^\d.-]/g, ''));
+
+            // Hitung total price
+            const totalPrice = harga * jumlah;
+
+            // Tampilkan total price di input harga
+            document.getElementById('harga').value = "Rp " + totalPrice.toLocaleString();
+        }
+    </script>
+</body>
+
+</html>

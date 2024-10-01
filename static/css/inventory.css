@@ -1,0 +1,151 @@
+:root {
+    --khaki: #ebded3;
+    --bistre: #4e1c14;
+    --rose-ebony: #69403D;
+    --black-bean: #31130E;
+    --gray: #ddd0c5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--bistre);
+    line-height: 1.6;
+    background-color: var(--khaki);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+header {
+    background-color: var(--black-bean);
+    padding: 20px 0;
+    color: var(--khaki);
+}
+
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 40px; 
+}
+
+
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.logout {
+    text-decoration: none;
+    color: var(--gray);
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+
+.sidebar {
+    height: 100%;
+    width: 280px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: var(--black-bean);
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 1.2em;
+    color: var(--khaki);
+    display: block;
+    transition: 0.3s;
+    border-left: 4px solid transparent;
+}
+
+.sidebar a:hover, .sidebar a.active {
+    background-color: var(--rose-ebony);
+    border-left-color: var(--gray);
+}
+
+.sidebar .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+.openbtn {
+    font-size: 20px;
+    cursor: pointer;
+    background-color: var(--black-bean);
+    color: var(--khaki);
+    padding: 10px 15px;
+    border: none;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+}
+
+.openbtn:hover {
+    background-color: var(--rose-ebony);
+}
+
+#main {
+    transition: margin-left .5s;
+    padding: 16px;
+    margin-left: 280px;
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--black-bean);
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid var(--bistre);
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: var(--rose-ebony);
+    color: var(--khaki);
+}
+
+tr:nth-child(even) {
+    background-color: var(--gray);
+}
+
+tr:hover {
+    background-color: var(--bistre);
+    color: var(--khaki);
+    cursor: pointer;
+}

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histori Transaksi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/inventory.css">
+    <!-- Tambahkan ini di bagian <head> -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        khaki: '#ebded3',
+                        bistre: '#B9AB96',
+                        'rose-ebony': '#69403D',
+                        'black-bean': '#31130E',
+                        gray: '#ddd0c5',
+                    },
+                    fontFamily: {
+                        'playfair': ['"Playfair Display"', 'serif'],
+                        'cormorant': ['"Cormorant Garamond"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <script>
+        const firebaseConfig = {
+        apiKey: "AIzaSyBqDwmOo58PlncIA9wU42Lkalbk-DFqfsg",
+        authDomain: "iakretail7.firebaseapp.com",
+        databaseURL: "https://iakretail7-default-rtdb.firebaseio.com",
+        projectId: "iakretail7",
+        storageBucket: "iakretail7.appspot.com",
+        messagingSenderId: "829556769722",
+        appId: "1:829556769722:web:fe75364fc513f993f35383",
+        measurementId: "G-7RFV5LYH1K"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+    </script>
+    <style>
+        :root {
+            --khaki: #ebded3;
+            --bistre: #4e1c14;
+            --rose-ebony: #69403D;
+            --black-bean: #31130E;
+            --gray: #ddd0c5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fair Display', serif;
+            background-color: var(--khaki);
+            color: var(--black-bean);
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+            margin-left: 280px; /* Match sidebar width */
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: var(--bistre);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--khaki);
+            font-size: 1em;
+        }
+
+        th, td {
+            border: 1px solid var(--rose-ebony);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--rose-ebony);
+            color: var(--khaki);
+            font-weight: 600;
+        }
+
+        th.sortable {
+            cursor: pointer;
+        }
+
+        th.sortable:hover {
+            background-color: var(--bistre);
+        }
+
+        th.sortable::after {
+            content: '\25B2'; /* Up arrow */
+            margin-left: 5px;
+            opacity: 0.5;
+        }
+
+        th.sort-asc::after {
+            content: '\25B2'; /* Up arrow */
+            opacity: 1;
+        }
+
+        th.sort-desc::after {
+            content: '\25BC'; /* Down arrow */
+            opacity: 1;
+        }
+
+        .action-btn {
+            background-color: var(--bistre);
+            color: var(--khaki);
+            border: none;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background-color: var(--rose-ebony);
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: right;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .pagination button {
+            background-color: var(--rose-ebony);
+            color: var(--khaki);
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background-color: var(--bistre);
+        }
+
+        .pagination span {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="mySidebar" class="h-full w-72 fixed z-10 top-0 left-0 bg-black-bean overflow-x-hidden transition-all duration-500 pt-15">
+        <a href="javascript:void(0)" class="closebtn absolute top-0 right-6 text-4xl" onclick="closeNav()">×</a>
+        <!-- Konten sidebar lainnya -->
+        <div class="mt-20 flex flex-col items-center space-y-4">
+            <a href="{{ url_for('beranda') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Beranda</a>
+            <a href="{{ url_for('transaksi') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Transaksi</a>
+            <a href="{{ url_for('histori') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Histori</a>
+            <a href="{{ url_for('gudang') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Gudang</a>
+            <a href="{{ url_for('pesan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Pesan</a>
+            <a href="{{ url_for('lacak_pesanan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Lacak Pesanan</a>
+        </div>
+
+        <!-- Tombol Logout di bagian bawah sidebar -->
+        <div class="absolute bottom-0 w-full pb-6">
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button type="submit" class="w-full bg-rose-ebony text-khaki text-xl py-3 hover:bg-gray">Log Out</button>
+            </form>
+        </div>
+        
+    </div>
+        
+    </div>
+    <div class="content">
+        <h1>Histori Transaksi</h1>
+        <table id="transactionTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ITEM</th>
+                    <th class="sortable" data-sort="time">WAKTU</th>
+                    <th class="sortable" data-sort="quantity">JUMLAH</th>
+                    <th class="sortable" data-sort="price">HARGA</th>
+                    <th>AKSI</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Transaction rows will be dynamically inserted here -->
+            </tbody>
+        </table>
+        <div class="pagination">
+            <button id="prevButton">Previous</button>
+            <span id="pageInfo">Page 1 of 1</span>
+            <button id="nextButton">Next</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample transaction data (replace this with actual data from your backend)
+
+        
+        async function fetchTransactions() {
+        try {
+            const querySnapshot = await db.collection("histori").get();
+            const tableBody = document.querySelector("#transactionTable tbody");
+            tableBody.innerHTML = ""; // Kosongkan isi tabel sebelumnya
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${data.id_pemesanan}</td>
+                    <td>Sepeda Ontel A</td>
+                    <td>${new Date(data.waktu.seconds).toLocaleString()}</td>
+                    <td>${data.jumlah}</td>
+                    <td>${data.harga}</td>
+                    <td><button class="action-btn" onclick="deleteTransaction('${doc.id}')">🗑️</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error("Error fetching transactions: ", error);
+        }
+    }
+
+    // Panggil fungsi fetchTransactions saat halaman dimuat
+    window.onload = fetchTransactions;
+
+    // Fungsi untuk menghapus transaksi dari Firestore
+    async function deleteTransaction(transactionId) {
+        if (confirm(`Are you sure you want to delete transaction ${transactionId}?`)) {
+            try {
+                await db.collection("histori").doc(transactionId).delete();
+                alert(`Transaction ${transactionId} deleted.`);
+                fetchTransactions(); // Refresh tabel setelah penghapusan
+            } catch (error) {
+                console.error("Error deleting transaction: ", error);
+            }
+        }
+    }
+
+        const itemsPerPage = 5;
+        let currentPage = 1;
+        let currentSort = { column: 'time', direction: 'desc' };
+
+        function displayTransactions() {
+            const tableBody = document.querySelector("#transactionTable tbody");
+            tableBody.innerHTML = "";
+
+            const sortedTransactions = [...transactions].sort((a, b) => {
+                if (currentSort.column === 'time') {
+                    return currentSort.direction === 'asc' 
+                        ? new Date(a.time) - new Date(b.time)
+                        : new Date(b.time) - new Date(a.time);
+                } else if (currentSort.column === 'quantity') {
+                    return currentSort.direction === 'asc' 
+                        ? a.quantity - b.quantity
+                        : b.quantity - a.quantity;
+                } else if (currentSort.column === 'price') {
+                    const priceA = parseInt(a.price.replace(/\D/g, ''));
+                    const priceB = parseInt(b.price.replace(/\D/g, ''));
+                    return currentSort.direction === 'asc' 
+                        ? priceA - priceB
+                        : priceB - priceA;
+                }
+                return 0;
+            });
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageTransactions = sortedTransactions.slice(startIndex, endIndex);
+
+            pageTransactions.forEach(transaction => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${transaction.id}</td>
+                    <td>${transaction.item}</td>
+                    <td>${transaction.time}</td>
+                    <td>${transaction.quantity}</td>
+                    <td>${transaction.price}</td>
+                    <td><button class="action-btn" onclick="deleteTransaction('${transaction.id}')">🗑️</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(transactions.length / itemsPerPage);
+            document.getElementById("pageInfo").textContent = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById("prevButton").disabled = currentPage === 1;
+            document.getElementById("nextButton").disabled = currentPage === totalPages;
+        }
+
+        function deleteTransaction(transactionId) {
+            if (confirm(`Are you sure you want to delete transaction ${transactionId}?`)) {
+                // Perform delete action (e.g., remove from database)
+                alert(`Transaction ${transactionId} deleted.`);
+                // For now, just remove from local transactions array
+                const index = transactions.findIndex(t => t.id === transactionId);
+                if (index > -1) {
+                    transactions.splice(index, 1);
+                    displayTransactions();
+                }
+            }
+        }
+
+        document.getElementById("prevButton").addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayTransactions();
+            }
+        });
+
+        document.getElementById("nextButton").addEventListener("click", () => {
+            const totalPages = Math.ceil(transactions.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayTransactions();
+            }
+        });
+
+        const sortableHeaders = document.querySelectorAll("th.sortable");
+        sortableHeaders.forEach(header => {
+            header.addEventListener("click", () => {
+                const column = header.dataset.sort;
+                if (currentSort.column === column) {
+                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort.column = column;
+                    currentSort.direction = 'asc';
+                }
+                displayTransactions();
+                sortableHeaders.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(currentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc');
+            });
+        });
+
+        // Initial display of transactions
+        displayTransactions();
+
+        
+    </script>
+</body>
+</html>

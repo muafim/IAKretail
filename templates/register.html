@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto+Slab:wght@300;400;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sepeda Ontel - Retail Omnibus - Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Roboto Slab', serif;
+        }
+    </style>
+    <script type="module">
+        // Import Firebase libraries
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+        apiKey: "AIzaSyBqDwmOo58PlncIA9wU42Lkalbk-DFqfsg",
+        authDomain: "iakretail7.firebaseapp.com",
+        databaseURL: "https://iakretail7-default-rtdb.firebaseio.com",
+        projectId: "iakretail7",
+        storageBucket: "iakretail7.appspot.com",
+        messagingSenderId: "829556769722",
+        appId: "1:829556769722:web:fe75364fc513f993f35383",
+        measurementId: "G-7RFV5LYH1K"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.registerUser = function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    alert("Registration successful!");
+                    window.location.href = "/"; // Redirect to login after registration
+                })
+                .catch((error) => {
+                    console.error(error.code, error.message);
+                    alert("Registration failed: " + error.message);
+                });
+        }
+    </script>
+</head>
+<body class="flex justify-center items-center h-screen bg-[#ebded3]">
+    <div class="flex flex-col md:flex-row w-full h-full shadow-lg">
+        <div class="flex flex-col justify-center w-full md:w-1/2 p-10 bg-[#ebded3]">
+            <div class="mb-6">
+                <h1 class="text-4xl font-playfair text-[#31130E] border-2 border-[#31130E] inline-block px-6 py-2 mb-4 tracking-wide">Retail Omnibus</h1>
+            </div>
+            <h2 class="text-2xl font-playfair mb-6 text-[#352723]">Daftar untuk mengakses sistem</h2>
+            <p class="text-lg text-[#69403D] mb-8">Daftar sebagai admin</p>
+            <form class="flex flex-col space-y-6" onsubmit="event.preventDefault(); registerUser();">
+                <div>
+                    <label for="email" class="text-[#31130E] font-semibold mb-2">Alamat email</label>
+                    <input type="email" id="email" required class="w-full p-3 border border-[#69403D] rounded bg-white text-[#31130E]">
+                </div>
+                <div>
+                    <label for="password" class="text-[#31130E] font-semibold mb-2">Kata sandi</label>
+                    <input type="password" id="password" required class="w-full p-3 border border-[#69403D] rounded bg-white text-[#31130E]">
+                </div>
+                <button type="submit" class="w-full p-3 bg-[#31130E] text-[#ebded3] rounded font-semibold transition duration-300 ease-in-out hover:bg-[#69403D]">Daftar</button>
+            </form>
+            <p class="mt-4 text-[#352723]">Sudah memiliki akun? <a href="/login" class="text-blue-500 hover:underline">Login</a></p>
+        </div>
+        <div class="flex flex-col justify-between w-full md:w-1/2 p-10 bg-[#B9AB96]">
+            <div class="text-right">
+                <div class="text-lg font-playfair text-[#31130E] border-2 border-[#31130E] inline-block px-4 py-2 tracking-wide mb-4">Retail Omnibus</div>
+            </div>
+            <div class="flex justify-center items-center h-5/6">
+                <img src="static/images/sepeda.png" alt="Vintage Bicycle" class="max-w-full max-h-full object-contain sepia-[30%]">
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @media (max-width: 768px) {
+            .bike-image {
+                height: 40%;
+            }
+        }
+    </style>
+</body>
+</html>

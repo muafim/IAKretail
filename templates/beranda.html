@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Retail Mewah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        khaki: '#ebded3',
+                        bistre: '#B9AB96',
+                        'rose-ebony': '#69403D',
+                        'black-bean': '#31130E',
+                        gray: '#ddd0c5',
+                    },
+                    fontFamily: {
+                        'playfair': ['"Playfair Display"', 'serif'],
+                        'cormorant': ['"Cormorant Garamond"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-cormorant text-bistre bg-khaki h-full">
+    <!-- Sidebar -->
+    <div id="mySidebar" class="h-full w-72 fixed z-10 top-0 left-0 bg-black-bean overflow-x-hidden transition-all duration-500 pt-15">
+        <a href="javascript:void(0)" class="closebtn absolute top-0 right-6 text-4xl" onclick="closeNav()">×</a>
+        <!-- Konten sidebar lainnya -->
+        <div class="mt-20 flex flex-col items-center space-y-4">
+            <a href="{{ url_for('beranda') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Beranda</a>
+            <a href="{{ url_for('transaksi') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Transaksi</a>
+            <a href="{{ url_for('histori') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Histori</a>
+            <a href="{{ url_for('gudang') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Gudang</a>
+            <a href="{{ url_for('pesan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Pesan</a>
+            <a href="{{ url_for('lacak_pesanan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Lacak Pesanan</a>
+        </div>
+
+        <!-- Tombol Logout di bagian bawah sidebar -->
+        <div class="absolute bottom-0 w-full pb-6">
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button type="submit" class="w-full bg-rose-ebony text-khaki text-xl py-3 hover:bg-gray">Log Out</button>
+            </form>
+        </div>
+        
+    </div>
+
+    <!-- Konten Utama -->
+    <div id="main" class="transition-all duration-500 ml-72">
+        <button class="openbtn fixed top-4 left-4 z-20 bg-black-bean text-khaki px-4 py-2 text-xl cursor-pointer hover:bg-rose-ebony" onclick="toggleNav()">☰</button>
+
+        <!-- Header -->
+        <header class="bg-black-bean text-khaki py-5">
+            <div class="container mx-auto px-5 flex flex-col items-center justify-center">
+                <div class="font-playfair text-3xl font-bold mb-2">Sistem Manajemen Retail</div>
+            </div>
+        </header>
+
+        <!-- Main content -->
+        <main>
+            <div class="flex items-center justify-between bg-rose-ebony text-khaki p-12 h-[500px]">
+                <div class="flex-1 max-w-1/2 text-left pl-15">
+                    <h2 class="font-playfair text-4xl mb-5">Selamat Datang</h2>
+                    <p class="text-2xl">Kayuh Sistemmu Kendalikan Bisnismu</p>
+                </div>
+                <div class="flex-1 max-w-1/2 flex justify-center">
+                    <img src="{{ url_for('static', filename='image/sepeda1.png') }}" alt="Sepeda" class="max-w-full h-auto object-cover">
+                </div>
+            </div>
+
+            <!-- Fitur utama -->
+            <section class="py-20 bg-khaki">
+                <div class="container mx-auto px-5">
+                    <h2 class="font-playfair text-center mb-15 text-black-bean text-4xl">Fitur Utama</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+                        <div class="bg-black-bean shadow-lg p-10 text-center transition duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl rounded-xl text-khaki">
+                            <a href="transaksi">
+                                <h3 class="font-playfair text-2xl mb-4">Transaksi</h3>
+                                <p>Kelola transaksi penjualan</p>
+                            </a>
+                        </div>
+                        <div class="bg-black-bean shadow-lg p-10 text-center transition duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl rounded-xl text-khaki">
+                            <a href="histori">
+                                <h3 class="font-playfair text-2xl mb-4">Histori</h3>
+                                <p>Lihat riwayat transaksi</p>
+                            </a>
+                        </div>
+                        <div class="bg-black-bean shadow-lg p-10 text-center transition duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl rounded-xl text-khaki">
+                            <a href="gudang">
+                                <h3 class="font-playfair text-2xl mb-4">Gudang</h3>
+                                <p>Kelola produk</p>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-2/3 mx-auto">
+                        <div class="bg-black-bean shadow-lg p-10 text-center transition duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl rounded-xl text-khaki">
+                            <a href="pesan">
+                                <h3 class="font-playfair text-2xl mb-4">Pesan</h3>
+                                <p>Pesan produk</p>
+                            </a>
+                        </div>
+                        <div class="bg-black-bean shadow-lg p-10 text-center transition duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl rounded-xl text-khaki">
+                            <a href="lacak_pesanan">
+                                <h3 class="font-playfair text-2xl mb-4">Lacak Pesanan</h3>
+                                <p>Pantau status pesanan</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tim kami -->
+            <section class="py-20 bg-bistre text-khaki">
+                <div class="container mx-auto px-5">
+                    <h2 class="font-playfair text-center mb-15 text-rose-ebony text-4xl">Tim Kami</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        <div class="bg-rose-ebony p-10 rounded-xl text-center transition duration-300 ease-in-out transform hover:scale-105">
+                            <img src="{{ url_for('static', filename='image/sepeda1.jpg') }}" alt="Anggota tim 1" class="w-36 h-36 rounded-full mx-auto mb-5 object-cover border-5 border-khaki">
+                            <div class="text-lg">
+                                <p>Nama</p>
+                                <p>NIM</p>
+                            </div>
+                        </div>
+                        <!-- Repeat for other team members -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let sidebarOpen = true;
+
+        function toggleNav() {
+            if (sidebarOpen) {
+                closeNav();
+            } else {
+                openNav();
+            }
+        }
+
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "280px";
+            document.getElementById("main").style.marginLeft = "280px";
+            sidebarOpen = true;
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+            document.getElementById("main").style.marginLeft = "0";
+            sidebarOpen = false;
+        }
+
+        // Tutup sidebar pada layar kecil secara default
+        if (window.innerWidth <= 768) {
+            closeNav();
+        }
+
+        // Fungsi logout
+        function logout() {
+            // Logika untuk logout, seperti menghapus token atau mengakhiri sesi pengguna
+            window.location.href = '/logout';  // Mengarahkan ke halaman logout
+        }
+    </script>
+</body>
+</html>

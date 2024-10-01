@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking Orders - Luxury Retail Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        khaki: '#ebded3',
+                        bistre: '#B9AB96',
+                        'rose-ebony': '#69403D',
+                        'black-bean': '#31130E',
+                        gray: '#ddd0c5',
+                    },
+                    fontFamily: {
+                        'playfair': ['"Playfair Display"', 'serif'],
+                        'cormorant': ['"Cormorant Garamond"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+        apiKey: "AIzaSyBqDwmOo58PlncIA9wU42Lkalbk-DFqfsg",
+        authDomain: "iakretail7.firebaseapp.com",
+        databaseURL: "https://iakretail7-default-rtdb.firebaseio.com",
+        projectId: "iakretail7",
+        storageBucket: "iakretail7.appspot.com",
+        messagingSenderId: "829556769722",
+        appId: "1:829556769722:web:fe75364fc513f993f35383",
+        measurementId: "G-7RFV5LYH1K"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+    </script>
+</head>
+<body class="bg-[#ebded3] font-cormorant text-[#4e1c14]">
+    <div id="main" class="transition-all duration-500 ml-72">
+        <div id="mySidebar" class="h-full w-72 fixed z-10 top-0 left-0 bg-black-bean overflow-x-hidden transition-all duration-500 pt-15">
+            <a href="javascript:void(0)" class="closebtn absolute top-0 right-6 text-4xl" onclick="closeNav()">×</a>
+            <!-- Konten sidebar lainnya -->
+            <div class="mt-20 flex flex-col items-center space-y-4">
+                <a href="{{ url_for('beranda') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Beranda</a>
+                <a href="{{ url_for('transaksi') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Transaksi</a>
+                <a href="{{ url_for('histori') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Histori</a>
+                <a href="{{ url_for('gudang') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Gudang</a>
+                <a href="{{ url_for('pesan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Pesan</a>
+                <a href="{{ url_for('lacak_pesanan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Lacak Pesanan</a>
+            </div>
+    
+            <!-- Tombol Logout di bagian bawah sidebar -->
+            <div class="absolute bottom-0 w-full pb-6">
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button type="submit" class="w-full bg-rose-ebony text-khaki text-xl py-3 hover:bg-gray">Log Out</button>
+                </form>
+            </div>
+            
+        </div>
+
+        <main class="max-w-[1200px] mx-auto mt-10">
+            <h1 class="text-3xl font-playfair font-bold text-[#31130E] mb-8">Tracking Orders</h1>
+            <table id="orderTable" class="w-full border-collapse mb-6">
+                <thead>
+                    <tr class="bg-[#69403D] text-[#ebded3]">
+                        <th class="border border-[#4e1c14] py-2 px-4">Order ID</th>
+                        <th class="border border-[#4e1c14] py-2 px-4">Order Date</th>
+                        <th class="border border-[#4e1c14] py-2 px-4">Distributor</th>
+                        <th class="border border-[#4e1c14] py-2 px-4">Nama Barang</th>
+                        <th class="border border-[#4e1c14] py-2 px-4">Harga</th>
+                        <th class="border border-[#4e1c14] py-2 px-4">Lama Pengiriman</th>
+                        <th class="border border-[#4e1c14] py-2 px-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="orderTableBody">
+                    {% for order in orders %}
+                    <tr>
+                        <td class="border border-[#4e1c14] py-2 px-4">{{ order.id_resi }}</td>
+                        <td class="border border-[#4e1c14] py-2 px-4">{{ order.order_date }}</td>
+                        <td class="border border-[#4e1c14] py-2 px-4">{{ order.distributor }}</td>
+                        <td class="border border-[#4e1c14] py-2 px-4">{{ order.nama_barang }}</td>
+                        <td class="border border-[#4e1c14] py-2 px-4">{{ order.harga }}</td>
+                        <td class="border border-[#4e1c14] py-2 px-4">{{ order.lama_pengiriman }}</td>
+                        <td class="border border-[#4e1c14] py-2 px-4">{{ order.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script>
+        // // Fetch data from Firebase and populate the table
+        // async function fetchOrders() {
+        //     const orderTableBody = document.getElementById("orderTableBody");
+        //     orderTableBody.innerHTML = '';  // Clear the table body
+
+        //     try {
+        //         const querySnapshot = await db.collection('lacak_pesanan').get();
+        //         querySnapshot.forEach((doc) => {
+        //             const data = doc.data();
+        //             const row = `
+        //                 <tr>
+        //                     <td class="border border-[#4e1c14] py-2 px-4">${data.id_resi}</td>
+        //                     <td class="border border-[#4e1c14] py-2 px-4">${new Date(data.order_date.seconds * 1000).toLocaleString()}</td>
+        //                     <td class="border border-[#4e1c14] py-2 px-4">${data.distributor}</td>
+        //                     <td class="border border-[#4e1c14] py-2 px-4">${data.nama_barang}</td>
+        //                     <td class="border border-[#4e1c14] py-2 px-4">${data.harga}</td>
+        //                     <td class="border border-[#4e1c14] py-2 px-4">${data.lama_pengiriman}</td>
+        //                     <td class="border border-[#4e1c14] py-2 px-4">${data.status}</td>
+        //                 </tr>
+        //             `;
+        //             orderTableBody.insertAdjacentHTML('beforeend', row);
+        //         });
+        //     } catch (error) {
+        //         console.error("Error fetching orders: ", error);
+        //     }
+        // }
+
+        // // Call fetchOrders on page load
+        // window.onload = fetchOrders;
+    </script>
+</body>
+</html>

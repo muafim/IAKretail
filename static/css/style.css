@@ -1,0 +1,143 @@
+:root {
+    --khaki: #ebded3;
+    --bistre: #4e1c14;
+    --rose-ebony: #69403D;
+    --black-bean: #31130E;
+    --gray: #ddd0c5;
+    --brown-dark: #352723;
+    --beige-light: #B9AB96;
+}
+
+/* General styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--bistre);
+    line-height: 1.6;
+    background-color: var(--khaki);
+    margin: 0;
+}
+
+/* Container styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header styles */
+header {
+    background-color: var(--black-bean);
+    padding: 20px 0;
+    color: var(--khaki);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+}
+
+.header-content .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.header-content .logout {
+    color: var(--khaki);
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+/* Main content styles */
+#main {
+    transition: margin-left .5s;
+    padding: 16px;
+    margin-left: 280px;
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--black-bean);
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: var(--beige-light);
+    border: 1px solid var(--brown-dark);
+}
+
+th, td {
+    border: 1px solid var(--bistre);
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: var(--rose-ebony);
+    color: var(--khaki);
+}
+
+tr:nth-child(even) {
+    background-color: var(--gray);
+}
+
+tr:hover {
+    background-color: var(--bistre);
+    color: var(--khaki);
+    cursor: pointer;
+}
+
+/* Product list styles */
+.product-list {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.product {
+    background-color: var(--beige-light);
+    padding: 20px;
+    border: 1px solid var(--brown-dark);
+    width: 300px;
+}
+
+.product h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.product p {
+    margin: 5px 0;
+}
+
+.product input {
+    width: 100px;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+/* Button styles */
+.btn, .checkout-btn, .hapus-btn {
+    background-color: var(--rose-ebony);
+    color: var(--khaki);
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.btn:hover, .checkout-btn:hover, .hapus-btn:hover {
+    background-color: var(--brown-dark);
+}

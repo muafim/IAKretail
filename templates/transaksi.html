@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaksi - Sistem Manajemen Retail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        khaki: '#ebded3',
+                        bistre: '#B9AB96',
+                        'rose-ebony': '#69403D',
+                        'black-bean': '#31130E',
+                        gray: '#ddd0c5',
+                    },
+                    fontFamily: {
+                        'playfair': ['"Playfair Display"', 'serif'],
+                        'cormorant': ['"Cormorant Garamond"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#ebded3] font-cormorant">
+    <div id="main" class="ml-72 p-8">
+        <div id="mySidebar" class="h-full w-72 fixed z-10 top-0 left-0 bg-black-bean overflow-x-hidden transition-all duration-500 pt-15">
+            <a href="javascript:void(0)" class="closebtn absolute top-0 right-6 text-4xl" onclick="closeNav()">×</a>
+            <!-- Konten sidebar lainnya -->
+            <div class="mt-20 flex flex-col items-center space-y-4">
+                <a href="{{ url_for('beranda') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Beranda</a>
+                <a href="{{ url_for('transaksi') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Transaksi</a>
+                <a href="{{ url_for('histori') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Histori</a>
+                <a href="{{ url_for('gudang') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Gudang</a>
+                <a href="{{ url_for('pesan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Pesan</a>
+                <a href="{{ url_for('lacak_pesanan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Lacak Pesanan</a>
+            </div>
+    
+            <!-- Tombol Logout di bagian bawah sidebar -->
+            <div class="absolute bottom-0 w-full pb-6">
+                <form action="{{ url_for('logout') }}" method="POST">
+                    <button type="submit" class="w-full bg-rose-ebony text-khaki text-xl py-3 hover:bg-gray">Log Out</button>
+                </form>
+            </div>
+            
+        </div>
+        <main class="container mx-auto">
+        <h1>Pilih Produk</h1>
+
+        <!-- Dropdown for Product Selection -->
+        <select id="product-dropdown" class="mb-5 py-2 px-3 bg-gray-200 border border-gray-400 rounded">
+            {% for product in products %}
+            <option value="{{ product.name }}" data-price="{{ product.price }}" data-stock="{{ product.stock }}">
+                {{ product.name }} - Rp. {{ "{:,}".format(product.price) }} (Stok: {{ product.stock }})
+            </option>                
+            {% endfor %}
+        </select>
+
+        <!-- Input for quantity and Add button -->
+        <div class="mb-5">
+            <input type="number" id="quantity-input" class="quantity-input py-2 px-3 bg-gray-200 border border-gray-400 rounded" placeholder="Jumlah" min="1" value="1">
+            <button id="tambah-btn" class="btn bg-bistre text-white py-2 px-4 mt-2">Tambah</button>
+        </div>
+
+        <!-- Dropdown for Distributor Selection -->
+        <h2>Pilih Distributor</h2>
+        <select id="distributor-dropdown" class="mb-5 py-2 px-3 bg-gray-200 border border-gray-400 rounded">
+            <option value="Distributor A">Distributor A</option>
+            <option value="Distributor B">Distributor B</option>
+            <option value="Distributor C">Distributor C</option>
+        </select>
+
+        <h2>Keranjang Belanja</h2>
+        <table class="w-full text-left border-collapse mt-5">
+            <thead>
+                <tr>
+                    <th class="border-b">Nama Produk</th>
+                    <th class="border-b">Jumlah</th>
+                    <th class="border-b">Distributor</th>
+                    <th class="border-b">Total Harga</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items">
+                <!-- Cart items will be inserted here dynamically -->
+            </tbody>
+        </table>
+        <button id="checkout-btn" class="checkout-btn bg-rose-ebony text-khaki py-2 px-4 mt-3">Checkout</button>
+        <button class="hapus-btn bg-gray text-black-bean py-2 px-4 mt-3">Hapus</button>
+    </main>
+
+    <script>
+        let cart = []; // Temporary shopping cart array
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            const tambahButton = document.getElementById('tambah-btn');
+            const checkoutButton = document.getElementById('checkout-btn');
+            const productDropdown = document.getElementById('product-dropdown');
+            const quantityInput = document.getElementById('quantity-input');
+            const distributorDropdown = document.getElementById('distributor-dropdown');
+    
+            tambahButton.addEventListener('click', function() {
+                const selectedOption = productDropdown.options[productDropdown.selectedIndex];
+                const name = selectedOption.value;
+                const price = parseFloat(selectedOption.getAttribute('data-price'));
+                const stock = parseInt(selectedOption.getAttribute('data-stock'));
+                const quantity = parseInt(quantityInput.value);
+                const distributor = distributorDropdown.value;
+    
+                if (quantity > 0 && quantity <= stock) {
+                    addToCart(name, quantity, price, distributor);
+                } else {
+                    alert('Jumlah melebihi stok tersedia.');
+                }
+            });
+    
+            // Checkout event listener to send POST request
+            checkoutButton.addEventListener('click', function() {
+                if (cart.length === 0) {
+                    alert('Keranjang kosong!');
+                    return;
+                }
+    
+                // Send the cart data to the server via POST request
+                fetch('/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({cart: cart})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Checkout berhasil: ' + data.message);
+                    cart = []; // Clear cart after successful checkout
+                    updateCartDisplay();
+                })
+                .catch(error => {
+                    console.error('Error during checkout:', error);
+                });
+            });
+    
+            // Clear cart event listener
+            const hapusButton = document.querySelector('.hapus-btn');
+            hapusButton.addEventListener('click', function() {
+                cart = []; // Clear cart
+                updateCartDisplay();
+            });
+        });
+    
+        function addToCart(name, quantity, price, distributor) {
+            const existingItem = cart.find(item => item.name === name && item.distributor === distributor);
+    
+            if (existingItem) {
+                existingItem.quantity += quantity;
+                existingItem.totalPrice += quantity * price;
+            } else {
+                cart.push({
+                    name: name,
+                    quantity: quantity,
+                    totalPrice: quantity * price,
+                    distributor: distributor
+                });
+            }
+    
+            updateCartDisplay();
+        }
+    
+        function updateCartDisplay() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            cartItemsContainer.innerHTML = ''; // Clear current items
+    
+            cart.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border-b py-2">${item.name}</td>
+                    <td class="border-b py-2">${item.quantity}</td>
+                    <td class="border-b py-2">${item.distributor}</td>
+                    <td class="border-b py-2">Rp. ${item.totalPrice.toLocaleString()}</td>
+                `;
+                cartItemsContainer.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>

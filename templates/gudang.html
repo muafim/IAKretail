@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Suku Cadang - Bike Retail Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/inventory.css') }}"> -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        khaki: '#ebded3',
+                        bistre: '#B9AB96',
+                        'rose-ebony': '#69403D',
+                        'black-bean': '#31130E',
+                        gray: '#ddd0c5',
+                    },
+                    fontFamily: {
+                        'playfair': ['"Playfair Display"', 'serif'],
+                        'cormorant': ['"Cormorant Garamond"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+
+    <div id="mySidebar" class="h-full w-72 fixed z-10 top-0 left-0 bg-black-bean overflow-x-hidden transition-all duration-500 pt-15">
+        <a href="javascript:void(0)" class="closebtn absolute top-0 right-6 text-4xl" onclick="closeNav()">×</a>
+        <!-- Konten sidebar lainnya -->
+        <div class="mt-20 flex flex-col items-center space-y-4">
+            <a href="{{ url_for('beranda') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Beranda</a>
+            <a href="{{ url_for('transaksi') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Transaksi</a>
+            <a href="{{ url_for('histori') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Histori</a>
+            <a href="{{ url_for('gudang') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Gudang</a>
+            <a href="{{ url_for('pesan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Pesan</a>
+            <a href="{{ url_for('lacak_pesanan') }}" class="text-khaki text-xl hover:bg-rose-ebony py-2 w-full text-center">Lacak Pesanan</a>
+        </div>
+
+        <!-- Tombol Logout di bagian bawah sidebar -->
+        <div class="absolute bottom-0 w-full pb-6">
+            <form action="{{ url_for('logout') }}" method="POST">
+                <button type="submit" class="w-full bg-rose-ebony text-khaki text-xl py-3 hover:bg-gray">Log Out</button>
+            </form>
+        </div>
+        
+    </div>
+
+    <div id="main">
+        <header class="bg-black-bean text-khaki py-5">
+            <div class="container mx-auto px-5 flex flex-col items-center justify-center">
+                <div class="font-playfair text-3xl font-bold mb-2">Gudang</div>
+            </div>
+        </header>
+
+        <main class="container">
+            <h1>Daftar Inventaris Suku Cadang</h1>
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>ID Bahan Baku</th>
+                        <th>Nama</th>
+                        <th>Jumlah</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory_items %}
+                    <tr>
+                        <td>{{ item.id_barang }}</td>
+                        <td>{{ item.nama_barang }}</td>
+                        <td>{{ item.stok }}</td>
+                        <td>
+                            <!-- Mengarahkan ke pesan.html dengan parameter item_id -->
+                            <form method="GET" action="{{ url_for('pesan', item_id=item.id_barang) }}">
+                                <button type="submit">Tambahkan</button>
+                            </form>
+                        </td>                                            
+                    </tr>
+                    {% endfor %}
+                </tbody>                
+            </table>            
+        </main>
+    </div>
+    <script>
+        let sidebarOpen = true;
+
+        function toggleNav() {
+            if (sidebarOpen) {
+                closeNav();
+            } else {
+                openNav();
+            }
+        }
+
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "280px";
+            document.getElementById("main").style.marginLeft = "280px";
+            sidebarOpen = true;
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+            document.getElementById("main").style.marginLeft = "0";
+            sidebarOpen = false;
+        }
+
+        // Tutup sidebar pada layar kecil secara default
+        if (window.innerWidth <= 768) {
+            closeNav();
+        }
+
+        // Fungsi logout
+        function logout() {
+            // Logika untuk logout, seperti menghapus token atau mengakhiri sesi pengguna
+            window.location.href = '/logout';  // Mengarahkan ke halaman logout
+        }
+    </script>
+</body>
+</html>
